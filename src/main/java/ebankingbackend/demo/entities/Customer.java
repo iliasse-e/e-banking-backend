@@ -5,7 +5,7 @@ import lombok.*;
 
 import java.util.List;
 @Entity
-@Data @AllArgsConstructor @NoArgsConstructor
+@Getter @Setter @AllArgsConstructor @NoArgsConstructor
 public class Customer {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
