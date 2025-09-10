@@ -1,20 +1,16 @@
 package ebankingbackend.demo;
 
-import ebankingbackend.demo.entities.CurrentAccount;
-import ebankingbackend.demo.entities.Customer;
-import ebankingbackend.demo.entities.SavingAccount;
-import ebankingbackend.demo.enums.AccountStatus;
-import ebankingbackend.demo.repositories.BankAccountRepository;
-import ebankingbackend.demo.repositories.CurrentAccountRepository;
-import ebankingbackend.demo.repositories.CustomerRepository;
-import ebankingbackend.demo.repositories.SavingAccountRepository;
+import ebankingbackend.demo.entities.*;
+import ebankingbackend.demo.exceptions.BalanceNotSufficientException;
+import ebankingbackend.demo.exceptions.BankAccountNotFoundException;
+import ebankingbackend.demo.exceptions.CustomerNotFoundException;
+import ebankingbackend.demo.services.BankAccountService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
-import java.util.Date;
-import java.util.UUID;
+import java.util.List;
 import java.util.stream.Stream;
 
 @SpringBootApplication
@@ -25,36 +21,43 @@ public class EBankingBackendApplication {
 	}
 
 	@Bean
-	CommandLineRunner start(CustomerRepository customerRepository, BankAccountRepository bankAccountRepository) {
+	CommandLineRunner commandLineRunner(BankAccountService bankAccountService) {
 		return args -> {
 			Stream.of("Hassan", "Yassine", "Aicha").forEach(name -> {
 				Customer customer = new Customer();
 				customer.setName(name);
 				customer.setEmail(name + "@gmail.com");
-				customerRepository.save(customer);
+				bankAccountService.saveCustomer(customer);
 			});
 
-			customerRepository.findAll().forEach(customer -> {
-				CurrentAccount currentAccount = new CurrentAccount();
-				currentAccount.setId(UUID.randomUUID().toString());
-				currentAccount.setBalance(Math.random() * 100);
-				currentAccount.setCreatedAt(new Date());
-				currentAccount.setCurrency("DH");
-				currentAccount.setStatus(AccountStatus.CREATED);
-				currentAccount.setCustomer(customer);
-				currentAccount.setOverDraft(5000);
-				bankAccountRepository.save(currentAccount);
+			bankAccountService.listCustomer().forEach(customer -> {
+                try {
+                    bankAccountService.saveCurrentBankAccount(Math.floor(Math.random() * 10000), 5000, customer.getId());
+					bankAccountService.saveSavingBankAccount(Math.floor(Math.random() * 1000), 5.5, customer.getId());
 
-				SavingAccount savingAccount = new SavingAccount();
-				savingAccount.setId(UUID.randomUUID().toString());
-				currentAccount.setCurrency("DH");
-				savingAccount.setBalance(Math.random() * 100);
-				savingAccount.setCreatedAt(new Date());
-				savingAccount.setStatus(AccountStatus.CREATED);
-				savingAccount.setCustomer(customer);
-				savingAccount.setInterestRate(2.3);
-				bankAccountRepository.save(savingAccount);
+					List<BankAccount> bankAccounts = bankAccountService.bankAccountList();
+
+					bankAccounts
+							.forEach(bankAccount -> {
+								for (int i = 0; i < 5; i++) {
+									try {
+										bankAccountService.credit(bankAccount.getId(), Math.floor(Math.random() * 1000), "Credit");
+										bankAccountService.debit(bankAccount.getId(), Math.floor(Math.random() * 100), "Debit");
+
+									} catch (BankAccountNotFoundException | BalanceNotSufficientException e) {
+										throw new RuntimeException(e);
+									}
+								}
+							});
+
+                } catch (CustomerNotFoundException e) {
+                    e.printStackTrace();
+                }
+            });
+
+			bankAccountService.bankAccountList().forEach(bankAccount -> {
 			});
+
 		};
 	}
 

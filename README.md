@@ -94,3 +94,10 @@ Résultat en base de données :
 |   CREATED    |
 |  ACTIVATED   |
 |   CREATED    |
+
+## Les logs
+
+## Gestion des erreurs
+
+Erreurs surveillées
+Try catch et signature
