@@ -1,5 +1,6 @@
 package ebankingbackend.demo;
 
+import ebankingbackend.demo.dtos.CustomerDTO;
 import ebankingbackend.demo.entities.*;
 import ebankingbackend.demo.exceptions.BalanceNotSufficientException;
 import ebankingbackend.demo.exceptions.BankAccountNotFoundException;
@@ -24,7 +25,7 @@ public class EBankingBackendApplication {
 	CommandLineRunner commandLineRunner(BankAccountService bankAccountService) {
 		return args -> {
 			Stream.of("Hassan", "Yassine", "Aicha").forEach(name -> {
-				Customer customer = new Customer();
+				CustomerDTO customer = new CustomerDTO();
 				customer.setName(name);
 				customer.setEmail(name + "@gmail.com");
 				bankAccountService.saveCustomer(customer);

@@ -101,3 +101,37 @@ Résultat en base de données :
 
 Erreurs surveillées
 Try catch et signature
+
+## Les boucles infinies (dans les relations bi-directionnelles)
+
+Dans un controller, si on envoie une donné ayant une relation bi-directionnelle (ex: one to many),
+On va se retrouver avec une erreur étant donné que `jackson` va sérialiser cette relation en une boucle infinie.
+
+Solutions à ce problème :
+
+```java
+import com.fasterxml.jackson.annotation.JsonProperty;
+
+@OneToMany(mappedBy = "customer")
+@JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
+private List<BankAccount> bankAccounts;
+```
+
+Néanmoins, la solution la plus viable restent le `DTO` :
+
+L'idée est de transformer une `Entité` à un `DTO`, et de laisser les entitées dans le serveur seulement.
+
+## Streams
+
+`.stream()` & `.collect()`
+
+```java
+public List<CustomerDTO> listCustomer() {
+    List<Customer> customers = customerRepository.findAll();
+    List<CustomerDTO> customersDTO = customers
+            .stream().map(customer -> customerMapper.toDto(customer))
+            .collect(Collectors.toList());
+    return customersDTO;
+}
+```
+
