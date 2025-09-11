@@ -1,11 +1,13 @@
 package ebankingbackend.demo;
 
+import ebankingbackend.demo.dtos.BankAccountDTO;
 import ebankingbackend.demo.dtos.CustomerDTO;
-import ebankingbackend.demo.entities.*;
 import ebankingbackend.demo.exceptions.BalanceNotSufficientException;
 import ebankingbackend.demo.exceptions.BankAccountNotFoundException;
 import ebankingbackend.demo.exceptions.CustomerNotFoundException;
+import ebankingbackend.demo.services.AccountOperationService;
 import ebankingbackend.demo.services.BankAccountService;
+import ebankingbackend.demo.services.CustomerService;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -22,21 +24,21 @@ public class EBankingBackendApplication {
 	}
 
 	@Bean
-	CommandLineRunner commandLineRunner(BankAccountService bankAccountService) {
+	CommandLineRunner commandLineRunner(BankAccountService bankAccountService, CustomerService customerService, AccountOperationService accountOperationService) {
 		return args -> {
 			Stream.of("Hassan", "Yassine", "Aicha").forEach(name -> {
 				CustomerDTO customer = new CustomerDTO();
 				customer.setName(name);
 				customer.setEmail(name + "@gmail.com");
-				bankAccountService.saveCustomer(customer);
+				customerService.saveCustomer(customer);
 			});
 
-			bankAccountService.listCustomer().forEach(customer -> {
+			customerService.listCustomer().forEach(customer -> {
                 try {
                     bankAccountService.saveCurrentBankAccount(Math.floor(Math.random() * 10000), 5000, customer.getId());
 					bankAccountService.saveSavingBankAccount(Math.floor(Math.random() * 1000), 5.5, customer.getId());
 
-					List<BankAccount> bankAccounts = bankAccountService.bankAccountList();
+					List<BankAccountDTO> bankAccounts = bankAccountService.bankAccountList();
 
 					bankAccounts
 							.forEach(bankAccount -> {

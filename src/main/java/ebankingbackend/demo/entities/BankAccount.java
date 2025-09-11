@@ -19,6 +19,7 @@ public class BankAccount {
     private Date createdAt;
     @Enumerated(EnumType.STRING)
     private AccountStatus status;
+    @Column(length = 40)
     private String currency;
     @ManyToOne
     private Customer customer;

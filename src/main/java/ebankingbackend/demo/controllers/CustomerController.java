@@ -1,44 +1,43 @@
 package ebankingbackend.demo.controllers;
 
 import ebankingbackend.demo.dtos.CustomerDTO;
-import ebankingbackend.demo.entities.Customer;
 import ebankingbackend.demo.exceptions.CustomerNotFoundException;
 import ebankingbackend.demo.services.BankAccountService;
+import ebankingbackend.demo.services.CustomerService;
 import lombok.AllArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
+@RequestMapping("/customers")
 @AllArgsConstructor
-@Slf4j
 public class CustomerController {
-    private BankAccountService bankAccountService;
+    private CustomerService customerService;
 
-    @GetMapping("/customers")
+    @GetMapping
     public List<CustomerDTO> customers() {
-        return bankAccountService.listCustomer();
+        return customerService.listCustomer();
     }
 
-    @GetMapping("/customer/{id}")
+    @GetMapping("/{id}")
     public CustomerDTO getCustomer(@PathVariable(name = "id") Long id) throws CustomerNotFoundException {
-        return bankAccountService.getCustomer(id);
+        return customerService.getCustomer(id);
     }
 
-    @PostMapping("/customers/create")
+    @PostMapping
     public CustomerDTO saveCustomer(@RequestBody CustomerDTO dto) {
-        return bankAccountService.saveCustomer(dto);
+        return customerService.saveCustomer(dto);
     }
 
-    @PatchMapping("/customers/update/{id}")
+    @PatchMapping("/{id}")
     public CustomerDTO updateCustomer(@PathVariable(name = "id") Long id, @RequestBody CustomerDTO dto) throws CustomerNotFoundException {
         dto.setId(id);
-        return bankAccountService.updateCustomer(dto);
+        return customerService.updateCustomer(dto);
     }
 
-    @DeleteMapping("/customers/delete/{id}")
+    @DeleteMapping("/{id}")
     public void deleteCustomer(@PathVariable(name = "id") Long id) {
-        bankAccountService.deleteCustomer(id);
+        customerService.deleteCustomer(id);
     }
 }
