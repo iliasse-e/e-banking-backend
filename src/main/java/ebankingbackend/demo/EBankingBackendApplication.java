@@ -58,9 +58,6 @@ public class EBankingBackendApplication {
                 }
             });
 
-			bankAccountService.bankAccountList().forEach(bankAccount -> {
-			});
-
 		};
 	}
 
