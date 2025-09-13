@@ -43,7 +43,7 @@ public class CustomerController {
     }
 
     @DeleteMapping("/{id}")
-    public void deleteCustomer(@PathVariable(name = "id") Long id) throws CustomerNotFoundException {
+    public void deleteCustomer(@PathVariable(name = "id") Long id) {
         log.info("DELETE /customers/{} - Deleting customer", id);
         customerService.deleteCustomer(id);
     }

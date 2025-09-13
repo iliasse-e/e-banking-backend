@@ -71,7 +71,7 @@ public class CustomerServiceImpl implements CustomerService {
     }
 
     @Override
-    public void deleteCustomer(Long id) throws CustomerNotFoundException {
+    public void deleteCustomer(Long id)  {
         log.info("Deleting customer with ID: {}", id);
         if (!customerRepository.existsById(id)) {
             log.warn("Attempted to delete non-existent customer with ID: {}", id);
