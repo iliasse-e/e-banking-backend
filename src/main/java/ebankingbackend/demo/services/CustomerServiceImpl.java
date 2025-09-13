@@ -43,7 +43,7 @@ public class CustomerServiceImpl implements CustomerService {
         log.info("Saving new customer with email: {}", customer.getEmail());
         Customer entity = customerMapper.toEntity(customer);
         Customer savedCustomer = customerRepository.save(entity);
-        log.info("Customer saved with ID: {}", savedCustomer.getId());
+        log.info("Customer saved with email: {}", savedCustomer.getEmail());
         return customerMapper.toDto(savedCustomer);
     }
 
@@ -60,12 +60,12 @@ public class CustomerServiceImpl implements CustomerService {
 
     @Override
     public CustomerDTO updateCustomer(CustomerDTO dto) throws CustomerNotFoundException {
-        log.info("Updating customer with ID: {}", dto.getId());
+        log.info("Updating customer with email: {}", dto.getEmail());
         Customer customer = getCustomerEntity(dto.getId());
         BeanUtils.copyProperties(dto, customer);
 
         Customer updatedCustomer = customerRepository.save(customer);
-        log.info("Updated customer with ID: {}", dto.getId());
+        log.info("Updated customer with email: {}", dto.getEmail());
 
         return customerMapper.toDto(updatedCustomer);
     }

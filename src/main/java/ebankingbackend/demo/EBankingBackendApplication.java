@@ -14,6 +14,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Stream;
 
 @SpringBootApplication
@@ -29,7 +30,7 @@ public class EBankingBackendApplication {
 			Stream.of("Hassan", "Yassine", "Aicha").forEach(name -> {
 				CustomerDTO customer = new CustomerDTO();
 				customer.setName(name);
-				customer.setEmail(name + "@gmail.com");
+				customer.setEmail(name.toLowerCase(Locale.ROOT) + "@gmail.com");
 				customerService.saveCustomer(customer);
 			});
 

@@ -152,8 +152,20 @@ Installer `<artifactId>spring-boot-starter-validation</artifactId>`
 Mettre en place l'annotation `@Valid` dans le controller :
 
 ```java
-    @PostMapping
+@PostMapping
 public CustomerDTO saveCustomer(@Valid @RequestBody CustomerDTO dto) {}
 ```
 
 On peut aussi créer un validateur personnalisé.
+
+## Tests
+
+
+|               Élément               |                	Utilisation principale             |
+|:-----------------------------------:|:------------------------------------------------------:|
+|           @SpringBootTest           |      	Test d’intégration global (pas pour TU pur)      |
+|             @WebMvcTest             |     	Test unitaire du contrôleur (mock du service)    |
+|              @MockBean              |      	Injection d’un mock dans le contexte Spring      |
+| @ExtendWith(MockitoExtension.class) |      	Pour les tests unitaires purs avec Mockito       |
+|        @Mock / @InjectMocks         |     	Pour mocker les dépendances dans les services    |
+|      MockMvc	                       |   Pour simuler des requêtes HTTP vers le contrôleur    |
