@@ -12,7 +12,7 @@ public interface CustomerService {
 
     CustomerDTO updateCustomer(CustomerDTO dto) throws CustomerNotFoundException;
 
-    void deleteCustomer(Long id);
+    void deleteCustomer(Long id) throws CustomerNotFoundException;
 
     CustomerDTO getCustomer(Long id) throws CustomerNotFoundException;
 }
