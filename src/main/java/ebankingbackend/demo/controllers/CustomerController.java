@@ -2,8 +2,8 @@ package ebankingbackend.demo.controllers;
 
 import ebankingbackend.demo.dtos.CustomerDTO;
 import ebankingbackend.demo.exceptions.CustomerNotFoundException;
-import ebankingbackend.demo.services.BankAccountService;
 import ebankingbackend.demo.services.CustomerService;
+import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 
@@ -26,7 +26,7 @@ public class CustomerController {
     }
 
     @PostMapping
-    public CustomerDTO saveCustomer(@RequestBody CustomerDTO dto) {
+    public CustomerDTO saveCustomer(@Valid @RequestBody CustomerDTO dto) {
         return customerService.saveCustomer(dto);
     }
 

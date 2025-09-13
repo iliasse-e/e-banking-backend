@@ -135,3 +135,25 @@ public List<CustomerDTO> listCustomer() {
 }
 ```
 
+## Validateurs & DTO
+
+Les DTO permettent de gérer la validation des données :
+
+```java
+public class CustomerDTO {
+    @NotNull(message = "Name cannot be null")
+    @Size(min = 2, message = "Name must have at least 2 characters")
+    private String name;
+}
+```
+
+Installer `<artifactId>spring-boot-starter-validation</artifactId>`
+
+Mettre en place l'annotation `@Valid` dans le controller :
+
+```java
+    @PostMapping
+public CustomerDTO saveCustomer(@Valid @RequestBody CustomerDTO dto) {}
+```
+
+On peut aussi créer un validateur personnalisé.
