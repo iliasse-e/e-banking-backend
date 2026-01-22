@@ -42,6 +42,8 @@ public class CustomerControllerTest {
         mockMvc.perform(get("/customers/1"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("name").value("Hassan"));
+
+        verify(customerService).getCustomer(1L);
     }
 
     @Test
@@ -51,6 +53,8 @@ public class CustomerControllerTest {
 
         mockMvc.perform(get("/customers/2"))
             .andExpect(status().isNotFound());
+
+        verify(customerService).getCustomer(2L);
     }
 
     @Test
@@ -64,6 +68,8 @@ public class CustomerControllerTest {
         mockMvc.perform(get("/customers"))
             .andExpect(status().isOk())
             .andExpect(jsonPath("$[0].name").value("Hassan"));
+
+        verify(customerService).listCustomer();
     }
 
     @Test
@@ -75,6 +81,8 @@ public class CustomerControllerTest {
             .andExpect(status().isOk())
             .andExpect(content().contentType(MediaType.APPLICATION_JSON))
             .andExpect(content().string("[]"));
+
+        verify(customerService).listCustomer();
     }
 
     @Test
@@ -89,6 +97,8 @@ public class CustomerControllerTest {
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.name").value("Bob"))
             .andExpect(jsonPath("$.email").value("bob@mail.com"));
+
+        verify(customerService).saveCustomer(any(CustomerDTO.class));
     }
 
     @Test
@@ -113,6 +123,8 @@ public class CustomerControllerTest {
             .andExpect(jsonPath("$.id").value(1))
             .andExpect(jsonPath("$.name").value("Charlie"))
             .andExpect(jsonPath("$.email").value("charlie@mail.com"));
+
+        verify(customerService).updateCustomer(any(CustomerDTO.class));
     }
 
 
