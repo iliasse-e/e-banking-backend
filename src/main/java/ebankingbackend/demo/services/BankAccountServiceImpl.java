@@ -2,7 +2,6 @@ package ebankingbackend.demo.services;
 
 import ebankingbackend.demo.dtos.BankAccountDTO;
 import ebankingbackend.demo.dtos.CurrentAccountDTO;
-import ebankingbackend.demo.dtos.CustomerDTO;
 import ebankingbackend.demo.dtos.SavingAccountDTO;
 import ebankingbackend.demo.entities.*;
 import ebankingbackend.demo.enums.AccountStatus;

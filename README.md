@@ -169,3 +169,224 @@ On peut aussi créer un validateur personnalisé.
 | @ExtendWith(MockitoExtension.class) |      	Pour les tests unitaires purs avec Mockito       |
 |        @Mock / @InjectMocks         |     	Pour mocker les dépendances dans les services    |
 |      MockMvc	                       |   Pour simuler des requêtes HTTP vers le contrôleur    |
+
+[Pour une introduction à J UNIT](https://github.com/iliasse-e/j-unit)
+[Pour une introduction à Mockito](https://github.com/iliasse-e/mockito)
+
+Lancer un fichier de test :
+
+```bash
+mvn -Dtest=CustomerRepositoryTest test
+```
+
+Lancer une seule méthode de test :
+
+```bash
+mvn -Dtest=CustomerRepositoryTest#shouldSaveCustomer test
+```
+
+### AssertJ
+
+[AssertJ](https://assertj.github.io/doc/) est une bibliothèque Java dédiée aux assertions dans les tests unitaires.
+Elle offre une syntaxe fluide, lisible et expressive, bien plus agréable que les assertions classiques de JUnit.
+
+```java
+import static org.assertj.core.api.Assertions.*;
+```
+
+Avec JUnit classique :
+
+```java
+assertEquals("Hello", message);
+```
+
+Avec AssertJ classique :
+
+```java
+assertThat(actual)
+    .isEqualTo(expected)       // égalité
+    .isNotEqualTo(unexpected)  // inégalité
+    .isNull()                  // null
+    .isNotNull()               // non null
+    .isInstanceOf(Class.class) // type
+    .isSameAs(obj)             // même référence
+    .isNotSameAs(obj);         // référence différente
+```
+
+Assertion sur les collections :
+
+```java
+List<String> names = List.of("Alice", "Bob", "Charlie");
+
+assertThat(names)
+    .isNotEmpty()
+    .hasSize(3)
+    .contains("Alice", "Bob")
+    .doesNotContain("David")
+    .allMatch(name -> name.length() > 2);
+
+```
+
+Assertion sur les exceptions :
+
+```java
+assertThatThrownBy(() -> {
+    throw new IllegalArgumentException("Bad argument");
+})
+    .isInstanceOf(IllegalArgumentException.class)
+    .hasMessageContaining("Bad");
+```
+
+On peut aussi tester des chaînes de caractères, des nombres, maps, objets.
+
+Voir la documentation.
+
+Intégration dans Spring boot
+
+```java
+List<Customer> result = customerRepository.findByName("ass");
+
+assertThat(result)
+    .isNotEmpty()
+    .extracting(Customer::getName)
+    .contains("Yassine");
+```
+
+### Tester un Service
+
+```java
+@ExtendWith(MockitoExtension.class)
+public class CustomerServiceTest {
+
+  @Mock 
+  private CustomerRepository customerRepository;
+
+  @Mock 
+  private CustomerMapperImpl customerMapper;
+  
+  @InjectMocks 
+  private CustomerServiceImpl customerService;
+```
+
+### Tester un Repository
+
+#### Test unitaire (TU)
+
+*Objectif* : tester une méthode isolée, sans dépendance réelle.
+
+*Outils* : Mockito pour simuler le repository, JUnit 5 pour orchestrer, AssertJ pour valider.
+
+```java
+@ExtendWith(MockitoExtension.class) 
+class CustomerRepositoryUnitTest { 
+    @Mock 
+    private CustomerRepository customerRepository;
+```
+
+#### Test d’intégration
+
+*Objectif* : vérifier que le repository fonctionne réellement avec une base de données.
+
+*Outils* : Spring Boot Test avec ``@DataJpaTest``, base embarquée (H2) ou Testcontainers.
+
+```java
+@DataJpaTest 
+@TestPropertySource("classpath:application-test.properties")
+public class CustomerRepositoryTest {
+
+  @Autowired
+  private CustomerRepository customerRepository;
+```
+
+##### ``@DataJpaTest``
+*But* : lancer un contexte Spring minimal pour tester la couche JPA.
+
+*Comportement* :
+Configure uniquement les beans liés à JPA (repositories, EntityManager, etc.).
+
+Utilise par défaut une base H2 en mémoire (sauf si tu précises une autre datasource).
+
+Applique automatiquement ``@Transactional`` → chaque test est rollbacké après exécution.
+
+
+###### ``@TestPropertySource``
+*But* : charger un fichier de configuration spécifique aux tests.
+
+Utile pour :
+- Définir une datasource différente (Postgres, MySQL, etc.).
+- Configurer des propriétés spécifiques (dialecte Hibernate, logging SQL, etc.).
+
+##### ``@AutoConfigureTestDatabase``
+But : contrôler la base utilisée pendant les tests.
+
+Options :
+
+``replace`` = ``AutoConfigureTestDatabase.Replace.NONE`` → utilise la vraie base définie dans application-test.properties.
+
+Par défaut, Spring remplace par une base embarquée (H2).
+
+
+##### ``@Transactionnal``
+
+Déjà inclus dans @DataJpaTest.
+
+Chaque test est exécuté dans une transaction rollbackée automatiquement → base propre à chaque test.
+
+Tu peux l’ajouter manuellement si besoin dans d’autres contextes
+
+##### Le fichier application-test.properties
+
+On peut utiliser une base H2 en mémoire (comme dans l'exemple "./src/test/resources/application-test.properties") ou bien utiliser une vraie base de données (ici postgresql) :
+
+```xml
+spring.datasource.url=jdbc:postgresql://localhost:5432/testdb
+spring.datasource.username=test
+spring.datasource.password=test
+spring.jpa.hibernate.ddl-auto=update
+```
+
+### Tester un Controller
+
+`@WebMvcTest(ControllerClass.class)` Lance un contexte Spring minimal pour tester uniquement la couche web (controller + MVC).
+
+`@MockBean` Permet de mocker les dépendances du controller (services).
+
+``MockMvc`` Outil pour simuler des requêtes HTTP (GET, POST, etc.) et vérifier les réponses.
+
+- Simuler les requêtes.
+
+    ```java
+    mockMvc.perform(get("/customers/1"))
+    ```
+
+- Check statut HTTP
+
+    ```java
+    mockMvc.perform(get("/customers/1")) 
+        .andExpect(status().isOk()); // 200
+    ```
+
+- Check contenu JSON
+
+    ```java
+    mockMvc.perform(get("/customers/1"))
+        .andExpect(jsonPath("$.name").value("Hassan"))
+        .andExpect(jsonPath("$.age").value(30));
+    ```
+
+- Check header
+
+    ```java
+    mockMvc.perform(post("/customers")
+        .contentType(MediaType.APPLICATION_JSON)
+        .content("{\"name\":\"Nassim\"}"))
+        .andExpect(status().isCreated())
+        .andExpect(header().string("Location", "/customers/1"));
+    ```
+
+- Vérification des appels au service
+
+    ```java
+    verify(customerService).getCustomer(1L);
+    ```
+

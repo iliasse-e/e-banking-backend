@@ -24,42 +24,5 @@ public class EBankingBackendApplication {
 		SpringApplication.run(EBankingBackendApplication.class, args);
 	}
 
-	@Bean
-	CommandLineRunner commandLineRunner(BankAccountService bankAccountService, CustomerService customerService, AccountOperationService accountOperationService) {
-		return args -> {
-			Stream.of("Hassan", "Yassine", "Aicha").forEach(name -> {
-				CustomerDTO customer = new CustomerDTO();
-				customer.setName(name);
-				customer.setEmail(name.toLowerCase(Locale.ROOT) + "@gmail.com");
-				customerService.saveCustomer(customer);
-			});
-
-			customerService.listCustomer().forEach(customer -> {
-                try {
-                    bankAccountService.saveCurrentBankAccount(Math.floor(Math.random() * 10000), 5000, customer.getId());
-					bankAccountService.saveSavingBankAccount(Math.floor(Math.random() * 1000), 5.5, customer.getId());
-
-					List<BankAccountDTO> bankAccounts = bankAccountService.bankAccountList();
-
-					bankAccounts
-							.forEach(bankAccount -> {
-								for (int i = 0; i < 5; i++) {
-									try {
-										bankAccountService.credit(bankAccount.getId(), Math.floor(Math.random() * 1000), "Credit");
-										bankAccountService.debit(bankAccount.getId(), Math.floor(Math.random() * 100), "Debit");
-
-									} catch (BankAccountNotFoundException | BalanceNotSufficientException e) {
-										throw new RuntimeException(e);
-									}
-								}
-							});
-
-                } catch (CustomerNotFoundException e) {
-                    e.printStackTrace();
-                }
-            });
-
-		};
-	}
 
 }
