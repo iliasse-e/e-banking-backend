@@ -127,5 +127,46 @@ public class CustomerControllerTest {
         verify(customerService).updateCustomer(any(CustomerDTO.class));
     }
 
+    @Test
+    void saveCustomer_shouldReturnBadRequestWhenEmailIsInvalid() throws Exception {
+        String invalidCustomerJson = """
+            { "name": "John", "email": "not-an-email", "age": 25 }
+        """;
+
+        mockMvc.perform(post("/customers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(invalidCustomerJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors[0].field").value("email"))
+            .andExpect(jsonPath("$.errors[0].message").value("must be a well-formed email address"));
+    }
+
+        @Test
+    void saveCustomer_shouldReturnBadRequestWhenNameIsInvalid() throws Exception {
+        String invalidCustomerJson = """
+            { "name": "J", "email": "namek@rmail.com", "age": 25 }
+        """;
+
+        mockMvc.perform(post("/customers")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(invalidCustomerJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors[0].field").value("name"))
+            .andExpect(jsonPath("$.errors[0].message").value("Name must have at least 2 characters"));
+    }
+
+    @Test
+    void updateCustomer_shouldReturnBadRequestWhenEmailIsInvalid() throws Exception {
+        String invalidCustomerJson = """
+            { "name": "John", "email": null, "age": 25 }
+        """;
+
+        mockMvc.perform(patch("/customers/1")
+            .contentType(MediaType.APPLICATION_JSON)
+            .content(invalidCustomerJson))
+            .andExpect(status().isBadRequest())
+            .andExpect(jsonPath("$.errors[0].field").value("email"))
+            .andExpect(jsonPath("$.errors[0].message").value("Email cannot be null"));
+    }
 
 }

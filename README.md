@@ -171,6 +171,7 @@ On peut aussi créer un validateur personnalisé.
 |      MockMvc	                       |   Pour simuler des requêtes HTTP vers le contrôleur    |
 
 [Pour une introduction à J UNIT](https://github.com/iliasse-e/j-unit)
+
 [Pour une introduction à Mockito](https://github.com/iliasse-e/mockito)
 
 Lancer un fichier de test :
@@ -258,13 +259,13 @@ assertThat(result)
 @ExtendWith(MockitoExtension.class)
 public class CustomerServiceTest {
 
-  @Mock 
+  @Mock
   private CustomerRepository customerRepository;
 
-  @Mock 
+  @Mock
   private CustomerMapperImpl customerMapper;
-  
-  @InjectMocks 
+
+  @InjectMocks
   private CustomerServiceImpl customerService;
 ```
 
@@ -317,9 +318,9 @@ Utile pour :
 - Configurer des propriétés spécifiques (dialecte Hibernate, logging SQL, etc.).
 
 ##### ``@AutoConfigureTestDatabase``
-But : contrôler la base utilisée pendant les tests.
+*But* : contrôler la base utilisée pendant les tests.
 
-Options :
+*Options* :
 
 ``replace`` = ``AutoConfigureTestDatabase.Replace.NONE`` → utilise la vraie base définie dans application-test.properties.
 
@@ -338,7 +339,7 @@ Tu peux l’ajouter manuellement si besoin dans d’autres contextes
 
 On peut utiliser une base H2 en mémoire (comme dans l'exemple "./src/test/resources/application-test.properties") ou bien utiliser une vraie base de données (ici postgresql) :
 
-```xml
+```bash
 spring.datasource.url=jdbc:postgresql://localhost:5432/testdb
 spring.datasource.username=test
 spring.datasource.password=test
@@ -355,38 +356,38 @@ spring.jpa.hibernate.ddl-auto=update
 
 - Simuler les requêtes.
 
-    ```java
-    mockMvc.perform(get("/customers/1"))
-    ```
+```java
+mockMvc.perform(get("/customers/1"))
+```
 
 - Check statut HTTP
 
-    ```java
-    mockMvc.perform(get("/customers/1")) 
-        .andExpect(status().isOk()); // 200
-    ```
+```java
+mockMvc.perform(get("/customers/1")) 
+    .andExpect(status().isOk()); // 200
+```
 
 - Check contenu JSON
 
-    ```java
-    mockMvc.perform(get("/customers/1"))
-        .andExpect(jsonPath("$.name").value("Hassan"))
-        .andExpect(jsonPath("$.age").value(30));
-    ```
+```java
+mockMvc.perform(get("/customers/1"))
+    .andExpect(jsonPath("$.name").value("Hassan"))
+    .andExpect(jsonPath("$.age").value(30));
+```
 
 - Check header
 
-    ```java
-    mockMvc.perform(post("/customers")
-        .contentType(MediaType.APPLICATION_JSON)
-        .content("{\"name\":\"Nassim\"}"))
-        .andExpect(status().isCreated())
-        .andExpect(header().string("Location", "/customers/1"));
-    ```
+```java
+mockMvc.perform(post("/customers")
+    .contentType(MediaType.APPLICATION_JSON)
+    .content("{\"name\":\"Nassim\"}"))
+    .andExpect(status().isCreated())
+    .andExpect(header().string("Location", "/customers/1"));
+```
 
 - Vérification des appels au service
 
-    ```java
-    verify(customerService).getCustomer(1L);
-    ```
+```java
+verify(customerService).getCustomer(1L);
+```
 

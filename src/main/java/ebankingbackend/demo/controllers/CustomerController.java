@@ -36,7 +36,7 @@ public class CustomerController {
     }
 
     @PatchMapping("/{id}")
-    public CustomerDTO updateCustomer(@PathVariable(name = "id") Long id, @RequestBody CustomerDTO dto) throws CustomerNotFoundException {
+    public CustomerDTO updateCustomer(@PathVariable(name = "id") Long id, @Valid @RequestBody CustomerDTO dto) throws CustomerNotFoundException {
         log.info("PATCH /customers/{} - Updating customer", id);
         dto.setId(id);
         return customerService.updateCustomer(dto);
